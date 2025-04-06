@@ -4,7 +4,7 @@ import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo'
 import { Slot } from 'expo-router'
 import { tokenCache } from "@/cache";
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_KEY!
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
 if(!publishableKey) {
   throw new Error("Missing EXPO_PUBLIC_CLERK_KEY in .env");
