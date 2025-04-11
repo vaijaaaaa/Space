@@ -7,8 +7,11 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView, TextInput } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
-
+import * as FileSystem from "expo-file-system";
 import { Image } from 'expo-image';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { HttpMethod } from 'svix/dist/request';
 
 
 export default function CreateScreen() {
@@ -30,7 +33,47 @@ export default function CreateScreen() {
 
     if(!result.canceled) setSelectedImage(result.assets[0].uri);
 
-  }
+  };
+
+ const generateUploadUrl = useMutation(api.posts.generateUploadUrl)
+ const createPost = useMutation(api.posts.createPost)
+
+ const handleShare = async() =>{
+    if(!selectedImage) return;
+
+    try {
+      setIsSharing(true);
+      const uploadUrl = await generateUploadUrl();
+
+      const uploadResult = await FileSystem.uploadAsync(uploadUrl,
+        selectedImage,{
+          httpMethod:"POST",
+          uploadType:FileSystem.FileSystemUploadType.BINARY_CONTENT,
+          mimeType:"image/jpeg",
+        }
+      );
+
+      if(uploadResult.status !== 200) throw new Error("Upload failed");
+
+      const{storageId} = JSON.parse(uploadResult.body);
+      await createPost({storageId,caption});
+
+      router.push("/(tabs)");
+
+    } catch (error) {
+      console.log("Error sharing Post");
+      
+    }finally{
+      setIsSharing(false);
+    }
+ }
+
+
+
+
+
+
+
 
   if(!selectedImage){
     return (
@@ -57,7 +100,7 @@ export default function CreateScreen() {
     <KeyboardAvoidingView
     behavior={Platform.OS === 'ios' ? 'padding' : "height"}
     style={styles.container}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <View style={styles.contentContainer}>
         <View style = {styles.header}>
@@ -78,6 +121,7 @@ export default function CreateScreen() {
         <TouchableOpacity
   style={[styles.shareButton, isSharing && styles.shareButtonDisabled]}
   disabled={isSharing || !selectedImage}
+  onPress={handleShare}
 >
   {isSharing ? (
     <ActivityIndicator size="small" color={COLORS.primary} />
@@ -93,6 +137,7 @@ export default function CreateScreen() {
       contentContainerStyle={styles.scrollContent}
       bounces={false}
       keyboardShouldPersistTaps="handled"
+      contentOffset={{x:0,y:100}}
       >
         <View
         style={(styles.content,isSharing && styles.contentDisabled)}
