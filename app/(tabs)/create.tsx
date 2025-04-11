@@ -6,6 +6,10 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
+import * as ImagePicker from 'expo-image-picker';
+
+
+
 export default function CreateScreen() {
 
   const router = useRouter();
@@ -15,7 +19,17 @@ export default function CreateScreen() {
   const [selectedImage,setSelectedImage] = useState<string | null>(null);
   const [isSharing,setIsSharing] = useState(false);
 
-  
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:"images",
+      allowsEditing:true,
+      aspect:[1,1],
+      quality:0.8,
+    });
+
+    if(!result.canceled) setSelectedImage(result.assets[0].uri);
+
+  }
 
 
 
@@ -35,7 +49,7 @@ export default function CreateScreen() {
       <View style={{ width: 28 }} />
     </View>
 
-    <TouchableOpacity style={styles.emptyImageContainer}>
+    <TouchableOpacity style={styles.emptyImageContainer} onPress={pickImage}>
       <Ionicons name="image-outline" size={48} color={COLORS.grey} />
       <Text style={styles.emptyImageText}>Tap to select an image</Text>
     </TouchableOpacity>
