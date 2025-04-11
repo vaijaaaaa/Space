@@ -4,10 +4,11 @@ import { useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView, TextInput } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
+import { Image } from 'expo-image';
 
 
 export default function CreateScreen() {
@@ -87,7 +88,55 @@ export default function CreateScreen() {
 
 
       </View>
-      
+
+      <ScrollView
+      contentContainerStyle={styles.scrollContent}
+      bounces={false}
+      keyboardShouldPersistTaps="handled"
+      >
+        <View
+        style={(styles.content,isSharing && styles.contentDisabled)}
+        >
+          <View style={styles.imageSection}>
+  <Image
+    source={selectedImage}
+    style={styles.previewImage}
+    contentFit="cover"
+    transition={200}
+  />
+
+  <TouchableOpacity
+    style={styles.changeImageButton}
+    onPress={pickImage}
+    disabled={isSharing}
+  >
+    <Ionicons name="image-outline" size={20} color={COLORS.white} />
+    <Text style={styles.changeImageText}>Change</Text>
+  </TouchableOpacity>
+          </View>
+          
+            <View style={styles.inputSection}>
+              <View style={styles.captionContainer}>
+                <Image
+                  source={user?.imageUrl}
+                  style={styles.userAvatar}
+                  contentFit="cover"
+                  transition={200}
+                />
+                <TextInput
+                  style={styles.captionInput}
+                  placeholder="Write a caption..."
+                  placeholderTextColor={COLORS.grey}
+                  multiline
+                  value={caption}
+                  onChangeText={setCaption}
+                  editable={!isSharing}
+                />
+              </View>
+            </View>
+
+        </View>
+      </ScrollView>
       </View>
     </KeyboardAvoidingView>
   );
