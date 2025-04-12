@@ -38,35 +38,52 @@ export default function CreateScreen() {
  const generateUploadUrl = useMutation(api.posts.generateUploadUrl)
  const createPost = useMutation(api.posts.createPost)
 
- const handleShare = async() =>{
-    if(!selectedImage) return;
+ const handleShare = async () => {
+  if (!selectedImage) {
+    console.log("No image selected");
+    return;
+  }
 
-    try {
-      setIsSharing(true);
-      const uploadUrl = await generateUploadUrl();
+  try {
+    setIsSharing(true);
+    console.log("Generating upload URL...");
 
-      const uploadResult = await FileSystem.uploadAsync(uploadUrl,
-        selectedImage,{
-          httpMethod:"POST",
-          uploadType:FileSystem.FileSystemUploadType.BINARY_CONTENT,
-          mimeType:"image/jpeg",
-        }
-      );
+    const uploadUrl = await generateUploadUrl();
+    console.log("Upload URL:", uploadUrl);
 
-      if(uploadResult.status !== 200) throw new Error("Upload failed");
+    console.log("Uploading image...");
+    const uploadResult = await FileSystem.uploadAsync(uploadUrl, selectedImage, {
+      httpMethod: "PUT",
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+      mimeType: "image/jpeg",
+    });
 
-      const{storageId} = JSON.parse(uploadResult.body);
-      await createPost({storageId,caption});
+    console.log("Upload result:", uploadResult);
 
-      router.push("/(tabs)");
-
-    } catch (error) {
-      console.log("Error sharing Post");
-      
-    }finally{
-      setIsSharing(false);
+    if (uploadResult.status !== 200) {
+      console.log("Upload failed with status:", uploadResult.status);
+      throw new Error("Upload failed");
     }
- }
+
+    const body = JSON.parse(uploadResult.body);
+    console.log("Parsed body:", body);
+
+    const { storageId } = body;
+    if (!storageId) {
+      throw new Error("No storageId in response");
+    }
+
+    console.log("Creating post with:", storageId, caption);
+    await createPost({ storageId, caption });
+
+    console.log("Post created successfully");
+    router.push("/");
+  } catch (error) {
+    console.log("Error sharing Post", error);
+  } finally {
+    setIsSharing(false);
+  }
+};
 
 
 
