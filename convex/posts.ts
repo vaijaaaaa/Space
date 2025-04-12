@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthenticatedUser } from "./users";
+import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation(async(ctx)=>{
     const identity = await ctx.auth.getUserIdentity();
@@ -54,7 +55,36 @@ export const getFeedPosts = query({
 
         if(posts.length === 0) return [];
 
-        return posts;
+
+
+        const postsWithInfo = await Promise.all(
+            posts.map(async(posts)=>{
+                const postAuthor = await ctx.db.get(posts.userId as Id<"users">);
+               const like = await ctx.db.query("likes")
+                .withIndex("by_user_and_post",
+                    (q) => q.eq("userId",currentUser._id).eq("postId",posts._id)).first()
+
+            
+                const bookmark = await ctx.db.query("bookmarks")
+                .withIndex("by_user_and_post",
+                    (q) => q.eq("userId",currentUser._id).eq("postId",posts._id)).first()
+
+                    return{
+                        ...posts,
+                        author:{
+                            _id:postAuthor?._id,
+                            username:postAuthor?.username,
+                            image:postAuthor?.image,
+                        },
+                        isLiked:!!like,
+                        isBookmarked:!!bookmark,
+                    }
+                
+            })
+        )
+
+
+        return postsWithInfo;
 
 
     }
