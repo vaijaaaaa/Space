@@ -45,7 +45,7 @@ export const addComment = mutation({
 })
 
 
-export const getCommenst = query({
+export const getComment = query({
     args:{postId:v.id("posts")},
     handler:async (ctx,args) => {
 
