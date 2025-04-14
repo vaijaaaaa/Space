@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import CommentsModal from './CommentsModal'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, set } from 'date-fns'
 
 
 
@@ -40,9 +40,12 @@ export default function Post({post}:PostProps) {
 
     const[isLiked, setIsLiked] = useState(post.isLiked);
     const[likesCount, setLikesCount] = useState(post.likes);
+    const[isBookmarked, setIsBookmarked] = useState(post.isBookmarked);
     const[commentsCount, setCommentsCount] = useState(post.comments);
     const[showComments, setShowComments] = useState(false);
+
     const toggleLike = useMutation(api.posts.toggleLike);
+    const toggleBookmark = useMutation(api.bookmarks.toggleBookmark);
     
 
 
@@ -58,6 +61,18 @@ export default function Post({post}:PostProps) {
         
       }
     }
+
+    const handleBookmark = async() =>{
+     const newIsBookmaked = await toggleBookmark({postId:post._id});
+     setIsBookmarked(newIsBookmaked);
+    }
+
+
+
+
+
+
+
 
   return (
 
@@ -101,8 +116,8 @@ export default function Post({post}:PostProps) {
             <Ionicons name={"chatbubble-outline"} size={22} color={COLORS.white} />
             </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-            <Ionicons name={"bookmark-outline"} size={22} color={COLORS.white} />
+        <TouchableOpacity onPress={handleBookmark}>
+            <Ionicons name={isBookmarked ? "bookmark":"bookmark-outline"} size={22} color={COLORS.white} />
         </TouchableOpacity>
         </View>
 

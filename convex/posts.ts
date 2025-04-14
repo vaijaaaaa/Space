@@ -112,3 +112,49 @@ export const toggleLike = mutation({
         }
     }
 })
+
+export const deletPost = mutation({
+    args:{postId:v.id("posts")},
+    handler:async(ctx,args) =>{
+        const currentUser = await getAuthenticatedUser(ctx);
+
+        const post = await ctx.db.get(args.postId);
+        if(!post) throw new Error("Post not found");
+
+        if(post.userId !== currentUser._id) throw new Error("You are not the owner of this post");
+
+
+
+        const likes = await ctx.db
+        .query("likes")
+        .withIndex("by_user_and_post",
+           (q) => q.eq("userId", currentUser._id).eq("postId", args.postId)).collect()
+
+
+
+
+        for(const like of likes) {
+            await ctx.db.delete(like._id);
+        }
+        
+        const comments = await ctx.db
+        .query("comments")
+        .withIndex("by_postId", (q) => q.eq("postId", args.postId))
+        .collect();
+        for(const comment of comments) {
+            await ctx.db.delete(comment._id);
+        }
+
+        const bookmarks = await ctx.db
+        .query("bookmarks")
+        .withIndex("by_user_and_post", (q) => q.eq("userId", currentUser._id).eq("postId", args.postId))
+        .collect();
+
+        for(const bookmark of bookmarks) {
+            await ctx.db.delete(bookmark._id);
+        }
+
+        await ctx.db.delete(args.postId);
+
+    },
+})
