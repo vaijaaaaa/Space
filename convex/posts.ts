@@ -59,7 +59,7 @@ export const getFeedPosts = query({
 
         const postsWithInfo = await Promise.all(
             posts.map(async(posts)=>{
-                const postAuthor = await ctx.db.get(posts.userId as Id<"users">);
+                const postAuthor = (await ctx.db.get(posts.userId as Id<"users">))!;
                const like = await ctx.db.query("likes")
                 .withIndex("by_user_and_post",
                     (q) => q.eq("userId",currentUser._id).eq("postId",posts._id)).first()

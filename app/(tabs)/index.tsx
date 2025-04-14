@@ -32,7 +32,9 @@ export default function Index() {
       
     </View>
 
-    <ScrollView showsHorizontalScrollIndicator={false}>
+    <ScrollView showsHorizontalScrollIndicator={false}
+    contentContainerStyle={{paddingBottom:60}}>
+
       <ScrollView 
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -44,7 +46,7 @@ export default function Index() {
           ))}
       </ScrollView>
       {posts.map((post)=>(
-        <Post key={post._id} post={post} />
+        <Post key={post._id} post={{ ...post, caption: post.caption || "" }} />
       ))}
 
     </ScrollView>
