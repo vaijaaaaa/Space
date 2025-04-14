@@ -5,6 +5,9 @@ import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
 import { Id } from '@/convex/_generated/dataModel'
+import { useState } from 'react'
+import { useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
 
 
@@ -33,7 +36,25 @@ type PostProps = {
 
 export default function Post({post}:PostProps) {
 
+    const[isLiked, setIsLiked] = useState(post.isLiked);
+    const[likesCount, setLikesCount] = useState(post.likes);
+
+    const toggleLike = useMutation(api.posts.toggleLike);
     
+
+
+
+
+    const handlelike = async() =>{
+      try {
+        const newIsLiked = await toggleLike({postId:post._id});
+        setIsLiked(newIsLiked);
+        setLikesCount((prev) => newIsLiked ? prev + 1 : prev - 1);
+      } catch (error) {
+        console.log("Error liking post:", error);
+        
+      }
+    }
 
   return (
 
@@ -70,8 +91,8 @@ export default function Post({post}:PostProps) {
 
         <View style={styles.postActions}>
         <View style={styles.postActionsLeft}>
-            <TouchableOpacity>
-            <Ionicons name={"heart-outline"} size={24} color={COLORS.white} />
+            <TouchableOpacity onPress={handlelike}>
+            <Ionicons name={isLiked ?"heart":"heart-outline"} size={24} color={COLORS.white} />
             </TouchableOpacity>
             <TouchableOpacity>
             <Ionicons name={"chatbubble-outline"} size={22} color={COLORS.white} />

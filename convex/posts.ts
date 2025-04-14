@@ -89,3 +89,26 @@ export const getFeedPosts = query({
 
     }
 })
+
+
+export const toggleLike = mutation({
+    args:{postId:v.id("posts")},
+    handler:async(ctx,args) =>{
+        const currentUser = await getAuthenticatedUser(ctx);
+
+        const like = await ctx.db.query("likes")
+        .withIndex("by_user_and_post",
+            (q) => q.eq("userId",currentUser._id).eq("postId",args.postId)).first()
+
+        if(like){
+            await ctx.db.delete(like._id);
+            return false;
+        }else{
+            await ctx.db.insert("likes",{
+                userId:currentUser._id,
+                postId:args.postId,
+            })
+            return true;
+        }
+    }
+})
