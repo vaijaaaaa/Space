@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import CommentsModal from './CommentsModal'
+import { formatDistanceToNow } from 'date-fns'
 
 
 
@@ -115,11 +116,16 @@ export default function Post({post}:PostProps) {
             </View>
         )}
 
-        <TouchableOpacity>
-            <Text style={styles.commentsText}>View all 2 comments</Text>
-        </TouchableOpacity>
+        {commentsCount > 0 && (
+             <TouchableOpacity onPress={() => setShowComments(true)}>
+             <Text style={styles.commentsText}>View all {commentsCount} comments</Text>
+         </TouchableOpacity>
+        )}
 
-        <Text style={styles.timeAgo}>2 hours ago</Text>
+
+     
+
+        <Text style={styles.timeAgo}>{formatDistanceToNow(post._creationTime,{addSuffix:true})}</Text>
         </View>
 
         <CommentsModal
