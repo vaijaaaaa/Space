@@ -1,4 +1,5 @@
 import { Loader } from "@/components/Loader";
+import Post from "@/components/Post";
 import Story from "@/components/Story";
 import { STORIES } from "@/constants/mock-data";
 import { COLORS } from "@/constants/theme";
