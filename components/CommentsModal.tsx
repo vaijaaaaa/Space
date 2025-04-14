@@ -1,4 +1,4 @@
-import { View, Text, Modal, KeyboardAvoidingView, Platform, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, Modal, KeyboardAvoidingView, Platform, TouchableOpacity, FlatList, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { Id } from '@/convex/_generated/dataModel';
 import { useMutation, useQuery } from 'convex/react';
@@ -7,7 +7,7 @@ import { styles } from '@/styles/feed.styles';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/theme';
 import { Loader } from './Loader';
-
+import Comment  from './Comment';
 
 
 type CommentsModal={
@@ -25,7 +25,25 @@ export default function CommentsModal({onClose,onCommentAdded,postId,visible}:Co
     const comments = useQuery(api.comments.getComment, {postId});
     const addComment = useMutation(api.comments.addComment);
 
-    const handleAddComment = async () => {}
+    const handleAddComment = async () => {
+        if(!newComment.trim()) return;
+
+        try {
+            await addComment({
+                content:newComment,
+                postId,
+            });
+
+            setNewComment("");
+            onCommentAdded();
+        } catch (error) {
+            console.log("Error adding comment:", error);
+            
+        }
+
+
+
+    }
 
 
 
@@ -59,7 +77,22 @@ export default function CommentsModal({onClose,onCommentAdded,postId,visible}:Co
 
 
 
+                <View style={styles.commentInput}>
+                    <TextInput
+                    style={styles.input}
+                    placeholder="Add a comment..."
+                    placeholderTextColor={COLORS.grey}
+                    value={newComment}
+                    onChangeText={setNewComment}
+                    multiline={true}
+                    />
+                    <TouchableOpacity onPress={handleAddComment} disabled={!newComment}>
+                        <Text style={[styles.postButton, !newComment.trim() && styles.postButtonDisabled]}>
+                            Post
+                        </Text>
 
+                    </TouchableOpacity>
+                </View>
 
 
 
