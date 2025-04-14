@@ -7,9 +7,7 @@ export default function Index() {
   const {signOut} = useAuth();
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => signOut()}>
-        <Text style={{color:"white"}}>Signout</Text>
-      </TouchableOpacity>
+      
     </View>
   );
 }
