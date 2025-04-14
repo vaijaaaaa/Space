@@ -33,7 +33,7 @@ export default defineSchema({
     }).index("by_postId", ["postId"]).index("by_user_and_post", ["userId", "postId"]),
 
 
-    commenst:defineTable({
+    comments:defineTable({
         userId:v.id("users"),
         postId:v.id("posts"),
         content:v.string(),
@@ -46,7 +46,7 @@ export default defineSchema({
     }).index("by_followerId", ["followerId"]).index("by_followingId", ["followingId"]).index("by_follower_and_following", ["followerId", "followingId"]),
 
 
-    notification:defineTable({
+    notifications:defineTable({
         receiverId:v.id("users"),
         senderId:v.id("users"),
         type:v.union(v.literal("like"), v.literal("comment"), v.literal("follow")),
