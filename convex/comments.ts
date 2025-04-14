@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAuthenticatedUser } from "./users";
 import { Id } from "./_generated/dataModel";
 
@@ -43,3 +43,31 @@ export const addComment = mutation({
 
     }
 })
+
+
+export const getCommenst = query({
+    args:{postId:v.id("posts")},
+    handler:async (ctx,args) => {
+
+        const comments = await ctx.db
+        .query("comments")
+        .withIndex("by_postId",(q) => q.eq("postId", args.postId))
+        .collect();
+
+        const commenstWithInfo = await Promise.all(
+            comments.map(async(Comment)=>{
+                const user = await ctx.db.get(Comment.userId);
+                return {
+                    ...Comment,
+                    user: {
+                       fullname:user!.fullname,
+                       image:user!.image,
+                    },
+                };
+            })
+        )
+        return commenstWithInfo;
+        
+    },
+})
+
