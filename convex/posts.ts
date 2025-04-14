@@ -156,5 +156,9 @@ export const deletPost = mutation({
 
         await ctx.db.delete(args.postId);
 
+        await ctx.db.patch(currentUser._id, {
+            posts: Math.max(0, (currentUser.posts || 0) - 1),
+        });
+
     },
 })

@@ -6,10 +6,11 @@ import { Ionicons } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
 import { Id } from '@/convex/_generated/dataModel'
 import { useState } from 'react'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import CommentsModal from './CommentsModal'
 import { formatDistanceToNow, set } from 'date-fns'
+import { useUser } from '@clerk/clerk-expo'
 
 
 
@@ -44,9 +45,17 @@ export default function Post({post}:PostProps) {
     const[commentsCount, setCommentsCount] = useState(post.comments);
     const[showComments, setShowComments] = useState(false);
 
+
+    const {user} = useUser();
+
+   const currentUser =  useQuery(api.users.getUserByClerkId, user ? {clerkId:user?.id} :"skip" )
+  
+
+
+
     const toggleLike = useMutation(api.posts.toggleLike);
     const toggleBookmark = useMutation(api.bookmarks.toggleBookmark);
-    
+    const deletePost = useMutation(api.posts.deletPost);
 
 
 
@@ -65,6 +74,15 @@ export default function Post({post}:PostProps) {
     const handleBookmark = async() =>{
      const newIsBookmaked = await toggleBookmark({postId:post._id});
      setIsBookmarked(newIsBookmaked);
+    }
+
+    const handleDelete = async() =>{
+      try {
+        await toggleLike({postId:post._id});
+      } catch (error) {
+        console.log("Error deleting post:", error);
+        
+      }
     }
 
 
@@ -91,12 +109,17 @@ export default function Post({post}:PostProps) {
         </TouchableOpacity>
       </Link>
 
-
-
-
-        <TouchableOpacity >
-            <Ionicons name ="trash-outline" size={20} color="white" />
-        </TouchableOpacity>
+       {/* if i'm the owner of the post, show the delete button */}
+{post.author._id === currentUser?._id ? (
+  <TouchableOpacity onPress={handleDelete}>
+    <Ionicons name="trash-outline" size={20} color={COLORS.primary} />
+  </TouchableOpacity>
+) : (
+  <TouchableOpacity>
+    <Ionicons name="ellipsis-horizontal" size={20} color={COLORS.white} />
+  </TouchableOpacity>
+)}
+        
     </View>
 
     <Image
