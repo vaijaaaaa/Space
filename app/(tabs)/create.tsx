@@ -77,6 +77,16 @@ export default function CreateScreen() {
     await createPost({ storageId, caption });
 
     console.log("Post created successfully");
+
+
+
+    setSelectedImage(null);
+    setCaption("");
+
+
+
+
+
     router.push("/");
   } catch (error) {
     console.log("Error sharing Post", error);
