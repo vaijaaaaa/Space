@@ -2,7 +2,6 @@
 
 Space is a personal Instagram-like social application built with React Native, designed to provide a private space for sharing moments and memories.
 
-![Space Logo](/api/placeholder/200/200)
 
 ## About
 
@@ -28,9 +27,6 @@ Space is a minimalist, performance-focused social sharing platform built with Re
 - **Navigation**: React Navigation
 - **UI Animations**: React Native Reanimated
 - **Media Handling**: Expo Camera and Media Library
-  
-## Screens
-{"type":"excalidraw/clipboard","workspaceId":"Yo3aGP6vkQJj4fjzJbNd","elements":[{"modifiedBy":"3NbLt7WeRvdEhyubGCpaY6V7avV2","modifiedAt":1744733808645,"userId":"3NbLt7WeRvdEhyubGCpaY6V7avV2","id":"72asg6bK7hDgVaY4RAiQo","x":23786.140908446134,"y":-2743.330931236555,"version":939,"versionNonce":89679774,"backgroundColor":"transparent","fillStyle":"solid","opacity":100,"roughness":1,"strokeColor":"#000000","strokeSharpness":"sharp","strokeStyle":"solid","strokeWidth":1,"url":"workspaces/HmXLppkOu2ThJmA3jX6b/WDnvNa0BYzRmrnHcKcqkwRxUBfG3/_uFP-7CpCCiE3cnLtAGCE.png","mimeType":"image/png","size":370182,"type":"image","width":908,"height":1916,"angle":0,"groupIds":[],"lockedGroupId":null,"seed":2036028640,"isDeleted":false,"boundElementIds":null,"zIndex":48}]}
 
 ## Installation
 
